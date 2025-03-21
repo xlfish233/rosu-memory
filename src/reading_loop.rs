@@ -45,13 +45,9 @@ pub fn process_key_overlay(
     Ok(())
 }
 
-pub fn process_gameplay(
-    p: &Process,
-    state: &mut State,
-    values: &mut OutputValues,
-    ruleset_addr: i32,
-) -> Result<()> {
+pub fn process_gameplay(p: &Process, state: &mut State, ruleset_addr: i32) -> Result<()> {
     let _span = span!("Gameplay data");
+    let values = &mut state.values;
 
     if values.prev_playtime > values.playtime {
         values.reset_gameplay(&mut state.ivalues);
@@ -151,8 +147,7 @@ pub fn process_gameplay(
 pub fn process_reading_loop(p: &Process, state: &mut State) -> Result<()> {
     let _span = span!("reading loop");
 
-    let values = state.values.clone();
-    let mut values = values.lock().unwrap();
+    let values = &mut state.values;
 
     let menu_mods_ptr = p.read_i32(state.addresses.menu_mods + 0x9)?;
 
@@ -344,16 +339,19 @@ pub fn process_reading_loop(p: &Process, state: &mut State) -> Result<()> {
         values.result_screen.update_accuracy();
     }
 
+    let gameplay_state = state.values.state;
+
     // Process gameplay
-    if values.state == GameState::Playing {
-        let res = process_gameplay(p, state, &mut values, ruleset_addr);
+    if gameplay_state == GameState::Playing {
+        let res = process_gameplay(p, state, ruleset_addr);
 
         if let Err(e) = res {
             println!("{:?}", e);
             println!("Skipped gameplay reading, probably it's not ready yet");
         }
     }
-
+    //brrow again
+    let values = &mut state.values;
     // Handling entering `ResultScreen` state
     if values.prev_state != GameState::ResultScreen && values.state == GameState::ResultScreen {
         if values.prev_state != GameState::Playing {

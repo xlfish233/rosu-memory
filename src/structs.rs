@@ -200,9 +200,10 @@ impl StaticAddresses {
     }
 }
 
+#[derive(Default)]
 pub struct State {
     pub addresses: StaticAddresses,
-    pub values: Arm<OutputValues>,
+    pub values: OutputValues,
     pub ivalues: InnerValues,
 }
 
@@ -224,7 +225,7 @@ impl InnerValues {
     }
 }
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Serialize, Clone)]
 pub struct KeyOverlayValues {
     pub k1_pressed: bool,
     pub k1_count: u32,
@@ -249,7 +250,7 @@ impl KeyOverlayValues {
     }
 }
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Serialize, Clone)]
 pub struct ResultScreenValues {
     pub username: String,
     pub mods: u32,
@@ -277,7 +278,7 @@ impl ResultScreenValues {
     }
 }
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Serialize, Clone)]
 pub struct BeatmapPathValues {
     /// Absolute beatmap file path
     /// Example: `/path/to/osu/Songs/124321 Artist - Title/my_map.osu`
@@ -304,7 +305,7 @@ pub struct BeatmapPathValues {
     pub audio_file: String,
 }
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Serialize, Clone)]
 pub struct BeatmapValues {
     pub artist: String,
     pub title: String,
@@ -348,7 +349,7 @@ pub struct BeatmapValues {
     pub paths: BeatmapPathValues,
 }
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Serialize, Clone)]
 pub struct GameplayValues {
     #[serde(skip)]
     pub hit_errors: Vec<i32>,
@@ -521,7 +522,7 @@ impl GameplayValues {
     }
 }
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Serialize, Clone)]
 pub struct OutputValues {
     /// Absolute path to the osu! folder
     /// Example: `/path/to/osu`
@@ -948,7 +949,6 @@ impl OutputValues {
             _ => (),
         }
     }
-
 
     pub fn update_stars_and_ss_pp(&mut self) {
         let _span = tracy_client::span!("update stars and ss_pp");

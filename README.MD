@@ -1,3 +1,7 @@
+# This project is forked from https://github.com/486c/rosu-memory.
+    it delete some api and just expose api to make user get gameplay || bid data.
+
+
 # rosu-memory
 
 Lightweight, cross-platform and simple osu! memory reader written in Rust

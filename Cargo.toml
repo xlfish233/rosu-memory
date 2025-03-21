@@ -3,6 +3,11 @@ name = "rosu-memory"
 version = "2.0.0"
 edition = "2021"
 
+# release as lib
+[lib]
+name = "rosu_memory"
+path = "src/lib.rs"
+
 [dependencies]
 rosu-mem = { git = "https://github.com/486c/rosu-mem.git", tag = "v2.0.0" }
 async-tungstenite = "0.29.1"

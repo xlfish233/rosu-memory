@@ -1,15 +1,9 @@
-mod gosu_structs;
-mod network;
 mod reading_loop;
 mod structs;
 mod utils;
-
-use structs::{Clients, InnerValues, OutputValues};
-
-use crate::network::{handle_clients, server_thread};
-
 use crate::reading_loop::process_reading_loop;
 use crate::structs::{State, StaticAddresses};
+use structs::{InnerValues, OutputValues};
 
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
@@ -65,17 +59,9 @@ fn main() -> Result<()> {
 
     let mut state = State {
         addresses: StaticAddresses::default(),
-        clients: Clients::default(),
         ivalues: inner_values,
         values: output_values,
     };
-
-    // Spawning Hyper server
-    let server_clients = state.clients.clone();
-    let server_values = state.values.clone();
-    std::thread::spawn(move || server_thread(server_clients, server_values));
-
-    println!("Spawned server!");
 
     if args.interval != Duration::from_millis(300) {
         println!("Using non default interval: {}", args.interval.as_millis());
@@ -176,10 +162,6 @@ fn main() -> Result<()> {
                     }
                 }
             }
-
-            smol::block_on(async {
-                handle_clients(state.values.clone(), state.clients.clone()).await;
-            });
 
             std::thread::sleep(args.interval);
         }

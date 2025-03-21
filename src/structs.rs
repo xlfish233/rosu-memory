@@ -5,8 +5,6 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use async_tungstenite::WebSocketStream;
-use hyper::upgrade::Upgraded;
 use rosu_mem::{
     process::{Process, ProcessTraits},
     signature::Signature,
@@ -22,25 +20,9 @@ use eyre::Result;
 use serde::Serialize;
 use serde_repr::Serialize_repr;
 
-use crate::{
-    network::smol_hyper::SmolIo,
-    utils::{effect_point_at, timing_point_at},
-};
-
-#[derive(Clone, Copy, PartialEq)]
-#[repr(u8)]
-pub enum WsKind {
-    Gosu,
-    Rosu,
-}
-
-pub struct WsClient {
-    pub kind: WsKind,
-    pub client: WebSocketStream<SmolIo<Upgraded>>,
-}
+use crate::utils::{effect_point_at, timing_point_at};
 
 pub type Arm<T> = Arc<Mutex<T>>;
-pub type Clients = Arm<Vec<WsClient>>;
 
 macro_rules! calculate_accuracy {
     ($self: expr) => {{
@@ -220,7 +202,6 @@ impl StaticAddresses {
 
 pub struct State {
     pub addresses: StaticAddresses,
-    pub clients: Clients,
     pub values: Arm<OutputValues>,
     pub ivalues: InnerValues,
 }
@@ -968,15 +949,6 @@ impl OutputValues {
         }
     }
 
-    /// Returns mods depending on current game state
-    pub fn get_current_mods(&self) -> u32 {
-        match self.state {
-            GameState::Playing => self.gameplay.mods,
-            GameState::SongSelect => self.menu_mods,
-            GameState::ResultScreen => self.result_screen.mods,
-            _ => self.menu_mods,
-        }
-    }
 
     pub fn update_stars_and_ss_pp(&mut self) {
         let _span = tracy_client::span!("update stars and ss_pp");

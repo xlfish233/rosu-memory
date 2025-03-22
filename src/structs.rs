@@ -16,7 +16,7 @@ use rosu_pp::{
     Beatmap, Difficulty, GradualPerformance, Performance,
 };
 
-use eyre::Result;
+use anyhow::Result;
 use serde::Serialize;
 use serde_repr::Serialize_repr;
 
@@ -170,7 +170,6 @@ pub struct StaticAddresses {
 
 impl StaticAddresses {
     pub fn new(p: &Process) -> Result<Self> {
-
         let base_sign = Signature::from_str("F8 01 74 04 83 65")?;
         let status_sign = Signature::from_str("48 83 F8 04 73 1E")?;
         let menu_mods_sign =
@@ -271,7 +270,6 @@ impl ResultScreenValues {
     }
 
     pub fn update_accuracy(&mut self) {
-
         self.accuracy = calculate_accuracy!(self);
     }
 }
@@ -384,7 +382,6 @@ impl GameplayValues {
     }
 
     pub fn passed_objects(&self) -> Result<usize, TryFromIntError> {
-
         let value = match self.gamemode() {
             GameMode::Osu => self.hit_300 + self.hit_100 + self.hit_50 + self.hit_miss,
             GameMode::Taiko => self.hit_300 + self.hit_100 + self.hit_miss,
@@ -481,7 +478,6 @@ impl GameplayValues {
     }
 
     pub fn update_accuracy(&mut self) {
-
         let acc: f64 = 'blk: {
             if self.passed_objects == 0 {
                 break 'blk 1.;
@@ -494,8 +490,6 @@ impl GameplayValues {
     }
 
     pub fn calculate_unstable_rate(&self) -> f64 {
-
-
         if self.hit_errors.is_empty() {
             return 0.0;
         };
@@ -642,7 +636,6 @@ impl OutputValues {
     // a lot.
     // Also reset a inner values for gradual pp calculator
     pub fn reset_gameplay(&mut self, ivalues: &mut InnerValues) {
-
         self.keyoverlay.reset();
 
         self.prev_combo = 0;
@@ -687,7 +680,6 @@ impl OutputValues {
     }
 
     pub fn update_min_max_bpm(&mut self) {
-
         if let Some(beatmap) = &self.current_beatmap {
             // Maybe this is not very idiomatic approach
             // but atleast we dont need to iterate twice
@@ -712,7 +704,6 @@ impl OutputValues {
     }
 
     pub fn update_current_bpm(&mut self) {
-
         let bpm = if let Some(beatmap) = &self.current_beatmap {
             match timing_point_at(beatmap, self.playtime as f64) {
                 Some(v) => 60000.0 / v.beat_len,
@@ -726,7 +717,6 @@ impl OutputValues {
     }
 
     pub fn update_kiai(&mut self) {
-
         self.kiai_now = if let Some(beatmap) = &self.current_beatmap {
             // TODO: get rid of extra allocation?
             let kiai_data = effect_point_at(beatmap, self.playtime as f64);
@@ -937,7 +927,6 @@ impl OutputValues {
     }
 
     pub fn update_stars_and_ss_pp(&mut self) {
-
         if let Some(beatmap) = &self.current_beatmap {
             let mods = {
                 match self.state {
@@ -974,7 +963,6 @@ impl OutputValues {
     }
 
     pub fn update_readable_mods(&mut self) {
-
         let mods_values = match self.state {
             GameState::Playing => self.gameplay.mods,
             GameState::SongSelect => self.menu_mods,
@@ -1001,7 +989,6 @@ impl OutputValues {
 
     /// Depends on `BeatmapValues` and `BeatmapPathValues`
     pub fn update_full_paths(&mut self) {
-
         // beatmap_full_path is expection because
         // it depends on previous state
 

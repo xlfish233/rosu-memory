@@ -2,7 +2,7 @@ use std::mem::size_of;
 
 use eyre::Result;
 use rosu_pp::{Beatmap, GameMods};
-use tracy_client::*;
+
 
 use rosu_mem::process::{Process, ProcessTraits};
 
@@ -46,7 +46,7 @@ pub fn process_key_overlay(
 }
 
 pub fn process_gameplay(p: &Process, state: &mut State, ruleset_addr: i32) -> Result<()> {
-    let _span = span!("Gameplay data");
+    
     let values = &mut state.values;
 
     if values.prev_playtime > values.playtime {
@@ -145,7 +145,6 @@ pub fn process_gameplay(p: &Process, state: &mut State, ruleset_addr: i32) -> Re
 }
 
 pub fn process_reading_loop(p: &Process, state: &mut State) -> Result<()> {
-    let _span = span!("reading loop");
 
     let values = &mut state.values;
 

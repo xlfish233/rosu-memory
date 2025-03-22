@@ -170,7 +170,6 @@ pub struct StaticAddresses {
 
 impl StaticAddresses {
     pub fn new(p: &Process) -> Result<Self> {
-        let _span = tracy_client::span!("static addresses");
 
         let base_sign = Signature::from_str("F8 01 74 04 83 65")?;
         let status_sign = Signature::from_str("48 83 F8 04 73 1E")?;
@@ -272,7 +271,6 @@ impl ResultScreenValues {
     }
 
     pub fn update_accuracy(&mut self) {
-        let _span = tracy_client::span!("result_screen: calculate accuracy");
 
         self.accuracy = calculate_accuracy!(self);
     }
@@ -382,12 +380,10 @@ pub struct GameplayValues {
 impl GameplayValues {
     #[inline]
     pub fn gamemode(&self) -> GameMode {
-        let _span = tracy_client::span!("gamplay gamemode");
         GameMode::from(self.mode as u8)
     }
 
     pub fn passed_objects(&self) -> Result<usize, TryFromIntError> {
-        let _span = tracy_client::span!("passed objects");
 
         let value = match self.gamemode() {
             GameMode::Osu => self.hit_300 + self.hit_100 + self.hit_50 + self.hit_miss,
@@ -409,7 +405,6 @@ impl GameplayValues {
     }
 
     pub fn get_current_grade(&self) -> &'static str {
-        let _span = tracy_client::span!("calculate current grade");
         let total_hits = self.passed_objects as f64;
         let base_grade = match self.gamemode() {
             GameMode::Osu => {
@@ -486,7 +481,6 @@ impl GameplayValues {
     }
 
     pub fn update_accuracy(&mut self) {
-        let _span = tracy_client::span!("calculate accuracy");
 
         let acc: f64 = 'blk: {
             if self.passed_objects == 0 {
@@ -500,7 +494,7 @@ impl GameplayValues {
     }
 
     pub fn calculate_unstable_rate(&self) -> f64 {
-        let _span = tracy_client::span!("calculate ur");
+
 
         if self.hit_errors.is_empty() {
             return 0.0;
@@ -648,7 +642,6 @@ impl OutputValues {
     // a lot.
     // Also reset a inner values for gradual pp calculator
     pub fn reset_gameplay(&mut self, ivalues: &mut InnerValues) {
-        let _span = tracy_client::span!("reset gameplay!");
 
         self.keyoverlay.reset();
 
@@ -690,12 +683,10 @@ impl OutputValues {
 
     #[inline]
     pub fn menu_gamemode(&self) -> GameMode {
-        let _span = tracy_client::span!("menu_gamemode");
         GameMode::from(self.menu_mode as u8)
     }
 
     pub fn update_min_max_bpm(&mut self) {
-        let _span = tracy_client::span!("update_min_max_bpm");
 
         if let Some(beatmap) = &self.current_beatmap {
             // Maybe this is not very idiomatic approach
@@ -721,7 +712,6 @@ impl OutputValues {
     }
 
     pub fn update_current_bpm(&mut self) {
-        let _span = tracy_client::span!("get current bpm");
 
         let bpm = if let Some(beatmap) = &self.current_beatmap {
             match timing_point_at(beatmap, self.playtime as f64) {
@@ -736,7 +726,6 @@ impl OutputValues {
     }
 
     pub fn update_kiai(&mut self) {
-        let _span = tracy_client::span!("get_kiai");
 
         self.kiai_now = if let Some(beatmap) = &self.current_beatmap {
             // TODO: get rid of extra allocation?
@@ -757,7 +746,6 @@ impl OutputValues {
         // TODO refactor this function in near future
         // maybe even split pp into struct aka `GameplayValues` -> pp
         // etc
-        let _span = tracy_client::span!("get_current_pp");
 
         if self.state == GameState::ResultScreen {
             if let Some(beatmap) = &self.current_beatmap {
@@ -860,7 +848,6 @@ impl OutputValues {
 
     /// Depends on `GameplayValues`
     pub fn update_fc_pp(&mut self, ivalues: &mut InnerValues) {
-        let _span = tracy_client::span!("update_fc_pp");
         if let Some(beatmap) = &self.current_beatmap {
             if ivalues.current_beatmap_perf.is_some() {
                 if let Some(perf_attrs) = ivalues.current_beatmap_perf.clone() {
@@ -906,7 +893,6 @@ impl OutputValues {
     ///
     /// Depends on `GameplayValues`
     pub fn adjust_bpm(&mut self) {
-        let _span = tracy_client::span!("adjust bpm");
         match self.state {
             GameState::Playing => {
                 if self.gameplay.mods & 64 > 0 {
@@ -951,7 +937,6 @@ impl OutputValues {
     }
 
     pub fn update_stars_and_ss_pp(&mut self) {
-        let _span = tracy_client::span!("update stars and ss_pp");
 
         if let Some(beatmap) = &self.current_beatmap {
             let mods = {
@@ -989,7 +974,6 @@ impl OutputValues {
     }
 
     pub fn update_readable_mods(&mut self) {
-        let _span = tracy_client::span!("get_readable_mods");
 
         let mods_values = match self.state {
             GameState::Playing => self.gameplay.mods,
@@ -1017,7 +1001,6 @@ impl OutputValues {
 
     /// Depends on `BeatmapValues` and `BeatmapPathValues`
     pub fn update_full_paths(&mut self) {
-        let _span = tracy_client::span!("update_full_paths");
 
         // beatmap_full_path is expection because
         // it depends on previous state

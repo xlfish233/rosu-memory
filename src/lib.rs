@@ -11,7 +11,6 @@ use structs::{State, StaticAddresses};
 #[derive(Default)]
 pub struct MemoryReader {
     process: Option<Process>,
-
     state: State,
 }
 
